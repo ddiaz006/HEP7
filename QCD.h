@@ -18,7 +18,7 @@ class QCD {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
-   static const int NP = 1524;
+   //static const float R; //= 0.8;
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
