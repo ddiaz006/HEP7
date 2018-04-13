@@ -44,7 +44,7 @@ void QCD::Loop()
 
     }//getting individual data
     
-    
+   /* 
     float d_ij[Event_numberP][Event_numberP];
     for(int i = 0; i<Event_numberP; i++){
       float PtInv_i = 1.0/(a_PPt[i]*a_PPt[i]);
@@ -62,7 +62,7 @@ void QCD::Loop()
          else {dR_ij[i][j] = 9999999;}   
          d_ij[i][j] = Pt_min*(1.0/(R*R))*(dR_ij[i][j]*dR_ij[i][j]);
       }
-     }
+     }*/
    }//loop over events
 
 TFile *outfile = new TFile("histos_QCD.root","RECREATE");
