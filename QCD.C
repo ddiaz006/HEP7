@@ -33,7 +33,7 @@ void QCD::Clustering(vector<int> &P_list, vector<int> &J_list, vector<int> &R_li
          if (d_ij[j] < dmin){ dmin = d_ij[j]; id = j;}
       }
       //cout << i<<":   dmin: "<<dmin<<"   id: "<<id<<endl;
-
+      //plan to add stuff not marked for removal to dummy vecotrs then at end delete old vectors and save dummy vectors in new ones 
       if(dmin < PtInv2_i) {R_list.push_back(i); R_list.push_back(id);}
       else J_list.push_back(i);
    }
@@ -98,8 +98,9 @@ void QCD::Loop()
     
       //if(jentry==0)//cout<<P_list.size()<<"    "<<v_PPt.size()<<"   "<<v_PPhi.size()<<endl;
       Clustering( P_list, J_list, R_list, v_PPt, v_PEta, v_PPhi);
+      //Plan move these next to for loops into clustering function and change the way objects are removed from the vectors
       for (int k = 0; k < J_list.size(); k ++)
-      {//addin jet info to jet vectors
+      {//adding jet info to jet vectors
         v_JPhi.push_back(v_PPhi[J_list[k]] );
         v_JEta.push_back(v_PEta[J_list[k]] );
         v_JPt .push_back(v_PPt [J_list[k]] );
@@ -119,6 +120,7 @@ void QCD::Loop()
        v_PPz .push_back(v_PPz [k]+v_PPz [k+1]);
        v_PEn .push_back(v_PEn [k]+v_PEn [k+1]);
        //remove merged pairs
+       //Removing is hard  since index changes when erase is used
        //P_list.erase(P_list.begin());
        //P_list.erase(P_list.begin()+1);
        //v_PPhi  .erase(v_PPhi  .begin()+k);
