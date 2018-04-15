@@ -106,8 +106,8 @@ public :
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
-   float            delta_R(float Eta, float Phi);
-   void             Clustering(vector<int> &P_list, vector<int> &J_list, vector<float> v_PPt, vector<float> v_PEta, vector<float> v_PPhi);
+   double           delta_R(double Eta, double Phi);
+   void             Clustering(vector<int> &P_list, vector<int> &J_list,vector<int> &R_list, vector<double> v_PPt, vector<double> v_PEta, vector<double> v_PPhi);
 };
 
 #endif
