@@ -58,6 +58,7 @@ public :
    Int_t           Particle_status[1524];   //[Event_numberP]
    Int_t           Particle_d1[1524];   //[Event_numberP]
    Int_t           Particle_d2[1524];   //[Event_numberP]
+   float R = 0.8;
 
    // List of branches
    TBranch        *b_Event_number;   //!
@@ -105,6 +106,8 @@ public :
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
+   double           delta_R(double Eta, double Phi);
+   void             Clustering(vector<int> &P_list, vector<int> &J_list,vector<int> &R_list, vector<double> v_PPt, vector<double> v_PEta, vector<double> v_PPhi);
 };
 
 #endif
@@ -130,6 +133,8 @@ QCD::~QCD()
    if (!fChain) return;
    delete fChain->GetCurrentFile();
 }
+
+
 
 Int_t QCD::GetEntry(Long64_t entry)
 {
