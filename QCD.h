@@ -58,6 +58,7 @@ public :
    Int_t           Particle_status[1524];   //[Event_numberP]
    Int_t           Particle_d1[1524];   //[Event_numberP]
    Int_t           Particle_d2[1524];   //[Event_numberP]
+   float R = 0.8;
 
    // List of branches
    TBranch        *b_Event_number;   //!
@@ -105,6 +106,8 @@ public :
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
+   float            delta_R(float Eta, float Phi);
+   void             Clustering(vector<int> &P_list, vector<int> &J_list, vector<float> v_PPt, vector<float> v_PEta, vector<float> v_PPhi);
 };
 
 #endif
@@ -115,9 +118,9 @@ QCD::QCD(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("qcd_bu.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("qcd.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("qcd_bu.root");
+         f = new TFile("qcd.root");
       }
       f->GetObject("Events",tree);
 
@@ -130,6 +133,8 @@ QCD::~QCD()
    if (!fChain) return;
    delete fChain->GetCurrentFile();
 }
+
+
 
 Int_t QCD::GetEntry(Long64_t entry)
 {
