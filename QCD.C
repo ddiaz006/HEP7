@@ -119,8 +119,8 @@ void QCD::Loop()
        v_PPz .push_back(v_PPz [k]+v_PPz [k+1]);
        v_PEn .push_back(v_PEn [k]+v_PEn [k+1]);
        //remove merged pairs
-       P_list.erase(P_list.begin());
-       P_list.erase(P_list.begin()+1);
+       //P_list.erase(P_list.begin());
+       //P_list.erase(P_list.begin()+1);
        //v_PPhi  .erase(v_PPhi  .begin()+k);
        //v_PPhi  .erase(v_PPhi  .begin()+(k+1));
        //v_PEta  .erase(v_PEta  .begin()+k);
@@ -136,7 +136,7 @@ void QCD::Loop()
        //v_PEn   .erase(v_PEn   .begin()+k);
        //v_PEn   .erase(v_PEn   .begin()+(k+1));
       }
-      Clustering( P_list, J_list, R_list, v_PPt, v_PEta, v_PPhi);
+      //Clustering( P_list, J_list, R_list, v_PPt, v_PEta, v_PPhi);
   /*    for (int k = 0; k < J_list.size(); k ++)
       {//addin jet info to jet vectors
         v_JPhi.push_back(v_PPhi[J_list[k]] );
