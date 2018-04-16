@@ -74,13 +74,13 @@ void QCD::Clustering( int &dP_listSize, vector<int> &dJ_list, vector<int> &dR_li
       else {
          dJ_list.push_back(i);
          //put jet into jet vectors
-         dv_JPhi.push_back(dv_PPhi[i]);
-         dv_JEta.push_back(dv_PEta[i]);
-         dv_JPt .push_back(dv_PPt [i]);
-         dv_JPx .push_back(dv_PPz [i]);
-         dv_JPy .push_back(dv_PPy [i]);
-         dv_JPz .push_back(dv_PPz [i]);
-         dv_JEn .push_back(dv_PEn [i]);
+         dv_JPhi.push_back(dv_PPhi[i]); dv_PPhi[i] = Null_d;
+         dv_JEta.push_back(dv_PEta[i]); dv_PEta[i] = Null_d;
+         dv_JPt .push_back(dv_PPt [i]); dv_PPt [i] = Null_d;
+         dv_JPx .push_back(dv_PPz [i]); dv_PPx [i] = Null_d;
+         dv_JPy .push_back(dv_PPy [i]); dv_PPy [i] = Null_d;
+         dv_JPz .push_back(dv_PPz [i]); dv_PPz [i] = Null_d;
+         dv_JEn .push_back(dv_PEn [i]); dv_PEn [i] = Null_d;
        
       }    
    }
