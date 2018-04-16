@@ -11,7 +11,7 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
-
+#include <iostream>
 // Header file for the classes stored in the TTree if any.
 
 class QCD {
@@ -111,7 +111,7 @@ public :
    double           delta_R(double Eta, double Phi);
    //void             Clustering(vector<int> &P_list, vector<int> &J_list,vector<int> &R_list, vector<double> v_PPt, vector<double> v_PEta, vector<double> v_PPhi);
    void             Erase(vector<double> &v_PPt, vector<double> &v_PEta, vector<double> &v_PPhi, vector<double> &v_PPx, vector<double> &v_PPy, vector<double> &v_PPz, vector<double> &v_PEn);
-   void             Clustering(vector<int> &P_list, vector<int> &J_list, vector<int> &R_list,vector<double> &v_PPt, vector<double> &v_PEta, vector<double> &v_PPhi, vector<double> &v_PPx, vector<double> &v_PPy, vector<double> &v_PPz, vector<double> &v_PEn, vector<double> &v_JPt, vector<double> &v_JEta, vector<double> &v_JPhi, vector<double> &v_JPx, vector<double> &v_JPy, vector<double> &v_JPz, vector<double> &v_JEn);
+   void             Clustering(int &dP_listSize, vector<int> &dJ_list, vector<int> &dR_list,vector<double> &dv_PPt, vector<double> &dv_PEta, vector<double> &dv_PPhi, vector<double> &dv_PPx, vector<double> &dv_PPy, vector<double> &dv_PPz, vector<double> &dv_PEn, vector<double> &dv_JPt, vector<double> &dv_JEta, vector<double> &dv_JPhi, vector<double> &dv_JPx, vector<double> &dv_JPy, vector<double> &dv_JPz, vector<double> &dv_JEn, int &dcounter);
 };
 
 #endif
