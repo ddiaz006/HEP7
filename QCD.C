@@ -9,7 +9,28 @@ double QCD::delta_R(double dEta, double dPhi)
      return sqrt( (dEta*dEta) + (dPhi*dPhi));
 }
 
-void QCD::Clustering(vector<int> &P_list, vector<int> &J_list, vector<int> &R_list, vector<double> v_PPt, vector<double> v_PEta, vector<double> v_PPhi)
+void QCD::Erase(vector<double> &v_PPt, vector<double> &v_PEta, vector<double> &v_PPhi, vector<double> &v_PPx, vector<double> &v_PPy, vector<double> &v_PPz, vector<double> &v_PEn){
+   bool clean = false;
+   while(clean !=true){
+   for (int i = 0; i< v_PPx.size(); i++){
+      bool found = false;
+      if(v_PPx[i] == Null_d){
+         v_PPt .erase(v_PPt .begin()  + i); 
+         v_PEta.erase(v_PEta.begin()  + i); 
+         v_PPhi.erase(v_PPhi.begin()  + i);  
+         v_PPx .erase(v_PPx .begin()  + i); 
+         v_PPy .erase(v_PPy .begin()  + i); 
+         v_PPz .erase(v_PPz .begin()  + i); 
+         v_PEn .erase(v_PEn .begin()  + i);
+         found = true; 
+      }
+      if (found == true) break;
+      if (i == (v_PPx.size() - 1)) clean =true;
+      }
+   }
+}
+
+void QCD::Clustering( vector<int> &P_list, vector<int> &J_list, vector<int> &R_list, vector<double> &v_PPt, vector<double> &v_PEta, vector<double> &v_PPhi, vector<double> &v_PPx, vector<double> &v_PPy, vector<double> &v_PPz, vector<double> &v_PEn, vector<double> &v_JPt, vector<double> &v_JEta, vector<double> &v_JPhi, vector<double> &v_JPx, vector<double> &v_JPy, vector<double> &v_JPz, vector<double> &v_JEn)
 {
    vector<double> d_ij;
    for(int i = 0; i<P_list.size()-1; i++)
@@ -34,9 +55,31 @@ void QCD::Clustering(vector<int> &P_list, vector<int> &J_list, vector<int> &R_li
       }
       //cout << i<<":   dmin: "<<dmin<<"   id: "<<id<<endl;
       //plan to add stuff not marked for removal to dummy vecotrs then at end delete old vectors and save dummy vectors in new ones 
-      if(dmin < PtInv2_i) {R_list.push_back(i); R_list.push_back(id);}
-      else J_list.push_back(i);
+      if(dmin < PtInv2_i) {
+         R_list.push_back(i); R_list.push_back(id);
+         //so add as new entries the merged objects, set the old quantites to a value marked for erasure.
+         v_PPt .push_back(v_PPt [i]  + v_PPt [id]); v_PPt [i] = Null_d; v_PPt [id] = Null_d;
+         v_PEta.push_back(v_PEta[i]  + v_PEta[id]); v_PEta[i] = Null_d; v_PEta[id] = Null_d;
+         v_PPhi.push_back(v_PPhi[i]  + v_PPhi[id]); v_PPhi[i] = Null_d; v_PPhi[id] = Null_d;  
+         v_PPx .push_back(v_PPx [i]  + v_PPx [id]); v_PPx [i] = Null_d; v_PPx [id] = Null_d;
+         v_PPy .push_back(v_PPy [i]  + v_PPy [id]); v_PPy [i] = Null_d; v_PPy [id] = Null_d;
+         v_PPz .push_back(v_PPz [i]  + v_PPz [id]); v_PPz [i] = Null_d; v_PPz [id] = Null_d;
+         v_PEn .push_back(v_PEn [i]  + v_PEn [id]); v_PEn [i] = Null_d; v_PEn [id] = Null_d;
+      }
+      else {
+         J_list.push_back(i);
+         //put jet into jet vectors
+         v_JPhi.push_back(v_PPhi[i]);
+         v_JEta.push_back(v_PEta[i]);
+         v_JPt .push_back(v_PPt [i]);
+         v_JPx .push_back(v_PPz [i]);
+         v_JPy .push_back(v_PPy [i]);
+         v_JPz .push_back(v_PPz [i]);
+         v_JEn .push_back(v_PEn [i]);
+       
+      }    
    }
+      Erase(v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn);
 }
 
 void QCD::Loop()
@@ -97,87 +140,15 @@ void QCD::Loop()
     }//getting individual data
     
       //if(jentry==0)//cout<<P_list.size()<<"    "<<v_PPt.size()<<"   "<<v_PPhi.size()<<endl;
-      Clustering( P_list, J_list, R_list, v_PPt, v_PEta, v_PPhi);
-      //Plan move these next to for loops into clustering function and change the way objects are removed from the vectors
-      for (int k = 0; k < J_list.size(); k ++)
-      {//adding jet info to jet vectors
-        v_JPhi.push_back(v_PPhi[J_list[k]] );
-        v_JEta.push_back(v_PEta[J_list[k]] );
-        v_JPt .push_back(v_PPt [J_list[k]] );
-        v_JPx .push_back(v_PPz [J_list[k]] );
-        v_JPy .push_back(v_PPy [J_list[k]] );
-        v_JPz .push_back(v_PPz [J_list[k]] );
-        v_JEn .push_back(v_PEn [J_list[k]] );
-      }
-      for(int k = 0; k < R_list.size()-1; k= k+2){
-        cout<<k<<"         "<<R_list[k]<<endl;
-       //merge i,j pairs
-       v_PPhi.push_back(v_PPhi[k]+v_PPhi[k+1]);
-       v_PEta.push_back(v_PEta[k]+v_PEta[k+1]);
-       v_PPt .push_back(v_PPt [k]+v_PPt [k+1]);
-       v_PPx .push_back(v_PPx [k]+v_PPx [k+1]);
-       v_PPy .push_back(v_PPy [k]+v_PPy [k+1]);
-       v_PPz .push_back(v_PPz [k]+v_PPz [k+1]);
-       v_PEn .push_back(v_PEn [k]+v_PEn [k+1]);
-       //remove merged pairs
-       //Removing is hard  since index changes when erase is used
-       //P_list.erase(P_list.begin());
-       //P_list.erase(P_list.begin()+1);
-       //v_PPhi  .erase(v_PPhi  .begin()+k);
-       //v_PPhi  .erase(v_PPhi  .begin()+(k+1));
-       //v_PEta  .erase(v_PEta  .begin()+k);
-       //v_PEta  .erase(v_PEta  .begin()+(k+1));
-       //v_PPt   .erase(v_PPt   .begin()+k);
-       //v_PPt   .erase(v_PPt   .begin()+(k+1));
-       //v_PPx   .erase(v_PPx   .begin()+k);
-       //v_PPx   .erase(v_PPx   .begin()+(k+1));
-       //v_PPy   .erase(v_PPy   .begin()+k);
-       //v_PPy   .erase(v_PPy   .begin()+(k+1));
-       //v_PPz   .erase(v_PPz   .begin()+k);
-       //v_PPz   .erase(v_PPz   .begin()+(k+1));
-       //v_PEn   .erase(v_PEn   .begin()+k);
-       //v_PEn   .erase(v_PEn   .begin()+(k+1));
-      }
-      //Clustering( P_list, J_list, R_list, v_PPt, v_PEta, v_PPhi);
-  /*    for (int k = 0; k < J_list.size(); k ++)
-      {//addin jet info to jet vectors
-        v_JPhi.push_back(v_PPhi[J_list[k]] );
-        v_JEta.push_back(v_PEta[J_list[k]] );
-        v_JPt .push_back(v_PPt [J_list[k]] );
-        v_JPx .push_back(v_PPz [J_list[k]] );
-        v_JPy .push_back(v_PPy [J_list[k]] );
-        v_JPz .push_back(v_PPz [J_list[k]] );
-        v_JEn .push_back(v_PEn [J_list[k]] );
-      }
-      for(int k = 0; k < R_list.size(); k= k+2){
-        cout<<k<<"         "<<R_list[k]<<endl;
-       //merge i,j pairs
-       v_PPhi.push_back(v_PPhi[k]+v_PPhi[k+1]);
-       v_PEta.push_back(v_PEta[k]+v_PEta[k+1]);
-       v_PPt .push_back(v_PPt [k]+v_PPt [k+1]);
-       v_PPx .push_back(v_PPx [k]+v_PPx [k+1]);
-       v_PPy .push_back(v_PPy [k]+v_PPy [k+1]);
-       v_PPz .push_back(v_PPz [k]+v_PPz [k+1]);
-       v_PEn .push_back(v_PEn [k]+v_PEn [k+1]);
-       //remove merged pairs
-       P_list.erase(P_list.begin()+k);
-       P_list.erase(P_list.begin()+(k+1));
-       v_PPhi  .erase(v_PPhi  .begin()+k);
-       v_PPhi  .erase(v_PPhi  .begin()+(k+1));
-       v_PEta  .erase(v_PEta  .begin()+k);
-       v_PEta  .erase(v_PEta  .begin()+(k+1));
-       v_PPt   .erase(v_PPt   .begin()+k);
-       v_PPt   .erase(v_PPt   .begin()+(k+1));
-       v_PPx   .erase(v_PPx   .begin()+k);
-       v_PPx   .erase(v_PPx   .begin()+(k+1));
-       v_PPy   .erase(v_PPy   .begin()+k);
-       v_PPy   .erase(v_PPy   .begin()+(k+1));
-       v_PPz   .erase(v_PPz   .begin()+k);
-       v_PPz   .erase(v_PPz   .begin()+(k+1));
-       v_PEn   .erase(v_PEn   .begin()+k);
-       v_PEn   .erase(v_PEn   .begin()+(k+1));
-      }
-*/
+      cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<endl;
+      Clustering( P_list, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn);
+      cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<endl;
+      Clustering( P_list, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn);
+      cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<endl;
+      Clustering( P_list, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn);
+      cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<endl;
+      Clustering( P_list, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn);
+      cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<endl;
    }//loop over events
 
 TFile *outfile = new TFile("histos_QCD.root","RECREATE");

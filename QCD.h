@@ -58,7 +58,9 @@ public :
    Int_t           Particle_status[1524];   //[Event_numberP]
    Int_t           Particle_d1[1524];   //[Event_numberP]
    Int_t           Particle_d2[1524];   //[Event_numberP]
-   float R = 0.8;
+   double R = 0.8;
+   double Null_d = 1234567891011;
+   int    Null_i = 123456789;
 
    // List of branches
    TBranch        *b_Event_number;   //!
@@ -107,7 +109,9 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    double           delta_R(double Eta, double Phi);
-   void             Clustering(vector<int> &P_list, vector<int> &J_list,vector<int> &R_list, vector<double> v_PPt, vector<double> v_PEta, vector<double> v_PPhi);
+   //void             Clustering(vector<int> &P_list, vector<int> &J_list,vector<int> &R_list, vector<double> v_PPt, vector<double> v_PEta, vector<double> v_PPhi);
+   void             Erase(vector<double> &v_PPt, vector<double> &v_PEta, vector<double> &v_PPhi, vector<double> &v_PPx, vector<double> &v_PPy, vector<double> &v_PPz, vector<double> &v_PEn);
+   void             Clustering(vector<int> &P_list, vector<int> &J_list, vector<int> &R_list,vector<double> &v_PPt, vector<double> &v_PEta, vector<double> &v_PPhi, vector<double> &v_PPx, vector<double> &v_PPy, vector<double> &v_PPz, vector<double> &v_PEn, vector<double> &v_JPt, vector<double> &v_JEta, vector<double> &v_JPhi, vector<double> &v_JPx, vector<double> &v_JPy, vector<double> &v_JPz, vector<double> &v_JEn);
 };
 
 #endif
