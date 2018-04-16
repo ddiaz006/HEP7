@@ -12,6 +12,11 @@
 #include <TChain.h>
 #include <TFile.h>
 #include <iostream>
+#include "TROOT.h"
+#include <TChain.h>
+#include <TString.h>
+ 
+#include <vector>
 // Header file for the classes stored in the TTree if any.
 
 class QCD {
@@ -109,9 +114,9 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    double           delta_R(double Eta, double Phi);
-   //void             Clustering(vector<int> &P_list, vector<int> &J_list,vector<int> &R_list, vector<double> v_PPt, vector<double> v_PEta, vector<double> v_PPhi);
-   void             Erase(vector<double> &v_PPt, vector<double> &v_PEta, vector<double> &v_PPhi, vector<double> &v_PPx, vector<double> &v_PPy, vector<double> &v_PPz, vector<double> &v_PEn);
-   void             Clustering(int &dP_listSize, vector<int> &dJ_list, vector<int> &dR_list,vector<double> &dv_PPt, vector<double> &dv_PEta, vector<double> &dv_PPhi, vector<double> &dv_PPx, vector<double> &dv_PPy, vector<double> &dv_PPz, vector<double> &dv_PEn, vector<double> &dv_JPt, vector<double> &dv_JEta, vector<double> &dv_JPhi, vector<double> &dv_JPx, vector<double> &dv_JPy, vector<double> &dv_JPz, vector<double> &dv_JEn, int &dcounter);
+   //void             Clustering(std::vector<int> &P_list, std::vector<int> &J_list,std::vector<int> &R_list, std::vector<double> v_PPt, std::vector<double> v_PEta, std::vector<double> v_PPhi);
+   void             Erase(std::vector<double> &v_PPt, std::vector<double> &v_PEta, std::vector<double> &v_PPhi, std::vector<double> &v_PPx, std::vector<double> &v_PPy, std::vector<double> &v_PPz, std::vector<double> &v_PEn);
+   void             Clustering(int &dP_listSize, std::vector<int> &dJ_list, std::vector<int> &dR_list,std::vector<double> &dv_PPt, std::vector<double> &dv_PEta, std::vector<double> &dv_PPhi, std::vector<double> &dv_PPx, std::vector<double> &dv_PPy, std::vector<double> &dv_PPz, std::vector<double> &dv_PEn, std::vector<double> &dv_JPt, std::vector<double> &dv_JEta, std::vector<double> &dv_JPhi, std::vector<double> &dv_JPx, std::vector<double> &dv_JPy, std::vector<double> &dv_JPz, std::vector<double> &dv_JEn, int &dcounter);
 };
 
 #endif
