@@ -104,13 +104,14 @@ void QCD::Loop()
    TH1F *h_PPt   = new TH1F("PP_t","PP_t", 100, 0,700);
    TH1F *h_PPhi  = new TH1F("PPhi","PPhi", 30, -1.65,1.65);
    TH1F *h_PEta  = new TH1F("PEta","PEta", 30, -3.2,3.2);
-   
+   int evcnt =0;
 
-   for (Long64_t jentry=0; jentry<1/*nentries*/;jentry++) {
+   for (Long64_t jentry=100; jentry<105/*nentries*/;jentry++) {
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   nbytes += nb;
-    
+      evcnt++;
+      cout<<"  "<<evcnt<<endl;
     //make arrays to store individ. values for later
     vector<double> v_PPhi; vector<double> v_JPhi;
     vector<double> v_PEta; vector<double> v_JEta;
@@ -125,8 +126,9 @@ void QCD::Loop()
     vector<int>   v_Particle_d1;
     //vector<TLorentzVector> P;
     int counter;
-    
+    //int Lala = 0; 
     for (int z = 0; z<Event_numberP; z++){
+      
       //Particle Pt,phi
       double PPt = sqrt(Particle_px[z]*Particle_px[z] + Particle_py[z]*Particle_py[z]);
       double PPhi = atan2(Particle_px[z],Particle_py[z]);
@@ -158,6 +160,12 @@ void QCD::Loop()
       //if(jentry==0)//cout<<P_listSize<<"    "<<v_PPt.size()<<"   "<<v_PPhi.size()<<endl;
       cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<endl;
 //      for(int k= 0; k < v_PPt.size(); k++){cout <<"intial("<<k<<"): "<<v_PPt[k]<<endl;}
+      Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
+      cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<endl;
+      Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
+      cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<endl;
+      Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
+      cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<endl;
       Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
       cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<endl;
       Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
