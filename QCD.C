@@ -6,6 +6,8 @@
 #include "TROOT.h"
 #include <TChain.h>
 #include <vector>
+#include <cmath>
+#include "TGraph.h"
 
 double QCD::delta_R(double dEta, double dPhi)
 {
@@ -14,10 +16,12 @@ double QCD::delta_R(double dEta, double dPhi)
 
 void QCD::Erase(std::vector<double> &v_PPt, std::vector<double> &v_PEta, std::vector<double> &v_PPhi, std::vector<double> &v_PPx, std::vector<double> &v_PPy, std::vector<double> &v_PPz, std::vector<double> &v_PEn){
    bool clean = false;
+   int count = 0;
    while(clean !=true){
+   //for(int l  = 0; l<v_PPx.size(); l++){std::cout<<count <<"............."<<v_PPx[l]<<std::endl;}
    for (int i = 0; i< v_PPx.size(); i++){
       bool found = false;
-      if(v_PPx[i] == Null_d){
+      if(v_PPx[i] >= Null_d){
          v_PPt .erase(v_PPt .begin()  + i); 
          v_PEta.erase(v_PEta.begin()  + i); 
          v_PPhi.erase(v_PPhi.begin()  + i);  
@@ -25,7 +29,8 @@ void QCD::Erase(std::vector<double> &v_PPt, std::vector<double> &v_PEta, std::ve
          v_PPy .erase(v_PPy .begin()  + i); 
          v_PPz .erase(v_PPz .begin()  + i); 
          v_PEn .erase(v_PEn .begin()  + i);
-         found = true; 
+         found = true;
+         count = count + 1; 
       }
       if (found == true) break;
       if (i == (v_PPx.size() - 1)) clean =true;
@@ -60,7 +65,7 @@ void QCD::Clustering( int &dP_listSize, std::vector<int> &dJ_list, std::vector<i
       {  //std::cout <<"****j=:"<<j<<"*** d_ij[j]: "<<d_ij[j]<<std::endl;
          if (d_ij[j] < dmin){ dmin = d_ij[j]; id = j;}
       }
-      std::cout << i<<":   dmin: "<<dmin<<"   dimin: "<<dimin<<std::endl;
+      //std::cout << i<<":   dmin: "<<dmin<<"   dimin: "<<dimin<<std::endl;
       //plan to add stuff not marked for removal to dummy vecotrs then at end delete old std::vectors and save dummy std::vectors in new ones 
       if(dmin < dimin) {
          dR_list.push_back(i); dR_list.push_back(id);
@@ -73,6 +78,8 @@ void QCD::Clustering( int &dP_listSize, std::vector<int> &dJ_list, std::vector<i
          dv_PPz .push_back(dv_PPz [i]  + dv_PPz [id]); dv_PPz [i] = Null_d; dv_PPz [id] = Null_d;
          dv_PEn .push_back(dv_PEn [i]  + dv_PEn [id]); dv_PEn [i] = Null_d; dv_PEn [id] = Null_d;
          dcounter= dcounter + 1;
+         Erase(dv_PPt, dv_PEta, dv_PPhi, dv_PPx, dv_PPy, dv_PPz, dv_PEn);
+         dP_listSize = dv_PPt.size();
       }
       else {
          dJ_list.push_back(i);
@@ -84,13 +91,14 @@ void QCD::Clustering( int &dP_listSize, std::vector<int> &dJ_list, std::vector<i
          dv_JPy .push_back(dv_PPy [i]); dv_PPy [i] = Null_d;
          dv_JPz .push_back(dv_PPz [i]); dv_PPz [i] = Null_d;
          dv_JEn .push_back(dv_PEn [i]); dv_PEn [i] = Null_d;
-       
+         Erase(dv_PPt, dv_PEta, dv_PPhi, dv_PPx, dv_PPy, dv_PPz, dv_PEn);
+         dP_listSize = dv_PPt.size();
       }    
    }
 //      for(int zz = 0; zz <dcounter; zz++){dP_list.pop_back();} 
 //      for(int k= 0; k < dv_PPt.size(); k++){std::cout <<"before erase("<<k<<"): "<<dv_PPt[k]<<std::endl;}
-      Erase(dv_PPt, dv_PEta, dv_PPhi, dv_PPx, dv_PPy, dv_PPz, dv_PEn);
-      dP_listSize = dv_PPt.size();
+      //Erase(dv_PPt, dv_PEta, dv_PPhi, dv_PPx, dv_PPy, dv_PPz, dv_PEn);
+      //dP_listSize = dv_PPt.size();
 }
 
 void QCD::Loop()
@@ -129,14 +137,14 @@ void QCD::Loop()
     //std::vector<TLorentzVector> P;
     int counter;
     
-    for (int z = 0; z<Event_numberP; z++){
+    for (int z = 0; z</*517*/Event_numberP; z++){
       //Particle Pt,phi
       double PPt = sqrt(Particle_px[z]*Particle_px[z] + Particle_py[z]*Particle_py[z]);
       double PPhi = atan2(Particle_px[z],Particle_py[z]);
       double PP = sqrt(Particle_px[z]*Particle_px[z] + Particle_py[z]*Particle_py[z] + Particle_pz[z]*Particle_pz[z]);
       double denom = (Particle_energy[z]*1.00000001) - Particle_pz[z];
       double num  = Particle_energy[z] + Particle_pz[z];
-      double PEta = 0.5*log( abs(num/denom) );
+      double PEta = 0.5*log( fabs(num/denom) );
       //TLorentzVector dummy;
       //dummy.SetPxPyPzE(Particle_px[z], Particle_py[z], Particle_pz[z], Particle_energy[z]);
       //P.push_back(dummy);
@@ -146,26 +154,36 @@ void QCD::Loop()
       //h_PPt->Fill(PPt);
       ////h_PPhi->Fill(PPhi);
       ///h_PEta->Fill(PEta);
-     
+     //std::cout<<"Eta: "<< fabs(PEta)  <<"       d1: "<<Particle_d1[z]<<std::endl;
       //fill particle histograms and arrays
-      if(abs(PEta) <5 && Particle_d1[z] <0){
+      if(fabs(PEta) <5 && Particle_d1[z] <0){
         /*h_PPt->Fill(PPt);*/   v_PPt.push_back(PPt);
         /*h_PPhi->Fill(PPhi);*/ v_PPhi.push_back(PPhi);
         /*h_PEta->Fill(PEta);*/ v_PEta.push_back(PEta);
         v_PPx.push_back(Particle_px[z]); v_PPy.push_back(Particle_py[z]); v_PPz.push_back(Particle_pz[z]); v_PEn.push_back(Particle_energy[z]); 
         //make list of particles
-        P_list.push_back(z); P_listSize= P_listSize + 1;
+        P_list.push_back(z); P_listSize= P_listSize + 1; 
       }
 
     }//getting individual data
     
       //if(jentry==0)//std::cout<<P_listSize<<"    "<<v_PPt.size()<<"   "<<v_PPhi.size()<<std::endl;
-      std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
 //      for(int k= 0; k < v_PPt.size(); k++){std::cout <<"intial("<<k<<"): "<<v_PPt[k]<<std::endl;}
-      Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
+      //for(int k=0; k<v_PEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} 
       std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
       Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
+      for(int k=0; k<v_PEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} 
       std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
+      Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
+      for(int k=0; k<v_PEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} 
+      std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
+      Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
+      for(int k=0; k<v_PEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} 
+      std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
+      /*Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
+      std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
+      Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
+      std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl; */
 //      for(int k= 0; k < v_PPt.size(); k++){std::cout <<"final("<<k<<"): "<<v_PPt[k]<<std::endl;}
    }//loop over events
 
