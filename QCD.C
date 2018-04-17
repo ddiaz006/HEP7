@@ -67,7 +67,21 @@ void QCD::Clustering( int &dP_listSize, std::vector<int> &dJ_list, std::vector<i
       }
       //std::cout << i<<":   dmin: "<<dmin<<"   dimin: "<<dimin<<std::endl;
       //plan to add stuff not marked for removal to dummy vecotrs then at end delete old std::vectors and save dummy std::vectors in new ones 
-      if(dmin < dimin) {
+      if(dmin > dimin) {
+         dJ_list.push_back(i);
+         //put jet into jet std::vectors
+         dv_JPhi.push_back(dv_PPhi[i]); dv_PPhi[i] = Null_d;
+         dv_JEta.push_back(dv_PEta[i]); dv_PEta[i] = Null_d;
+         dv_JPt .push_back(dv_PPt [i]); dv_PPt [i] = Null_d;
+         dv_JPx .push_back(dv_PPz [i]); dv_PPx [i] = Null_d;
+         dv_JPy .push_back(dv_PPy [i]); dv_PPy [i] = Null_d;
+         dv_JPz .push_back(dv_PPz [i]); dv_PPz [i] = Null_d;
+         dv_JEn .push_back(dv_PEn [i]); dv_PEn [i] = Null_d;
+         Erase(dv_PPt, dv_PEta, dv_PPhi, dv_PPx, dv_PPy, dv_PPz, dv_PEn);
+         dP_listSize = dv_PPt.size();
+      }    
+      //if(dmin < dimin /*&& dP_listSize>1*/) 
+         else {
          dR_list.push_back(i); dR_list.push_back(id);
          //so add as new entries the merged objects, set the old quantites to a value marked for erasure.
          dv_PPt .push_back(dv_PPt [i]  + dv_PPt [id]); dv_PPt [i] = Null_d; dv_PPt [id] = Null_d;
@@ -81,19 +95,6 @@ void QCD::Clustering( int &dP_listSize, std::vector<int> &dJ_list, std::vector<i
          Erase(dv_PPt, dv_PEta, dv_PPhi, dv_PPx, dv_PPy, dv_PPz, dv_PEn);
          dP_listSize = dv_PPt.size();
       }
-      else {
-         dJ_list.push_back(i);
-         //put jet into jet std::vectors
-         dv_JPhi.push_back(dv_PPhi[i]); dv_PPhi[i] = Null_d;
-         dv_JEta.push_back(dv_PEta[i]); dv_PEta[i] = Null_d;
-         dv_JPt .push_back(dv_PPt [i]); dv_PPt [i] = Null_d;
-         dv_JPx .push_back(dv_PPz [i]); dv_PPx [i] = Null_d;
-         dv_JPy .push_back(dv_PPy [i]); dv_PPy [i] = Null_d;
-         dv_JPz .push_back(dv_PPz [i]); dv_PPz [i] = Null_d;
-         dv_JEn .push_back(dv_PEn [i]); dv_PEn [i] = Null_d;
-         Erase(dv_PPt, dv_PEta, dv_PPhi, dv_PPx, dv_PPy, dv_PPz, dv_PEn);
-         dP_listSize = dv_PPt.size();
-      }    
    }
 //      for(int zz = 0; zz <dcounter; zz++){dP_list.pop_back();} 
 //      for(int k= 0; k < dv_PPt.size(); k++){std::cout <<"before erase("<<k<<"): "<<dv_PPt[k]<<std::endl;}
@@ -117,7 +118,7 @@ void QCD::Loop()
    //TH1F *h_PEta  = new TH1F("PEta","PEta", 30, -3.2,3.2);
    
 
-   for (Long64_t jentry=0; jentry<1/*nentries*/;jentry++) {
+   for (Long64_t jentry=0; jentry<20/*nentries*/;jentry++) {
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   nbytes += nb;
@@ -172,9 +173,10 @@ void QCD::Loop()
     std::cout<<"Before Clustering: NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
     while(v_PPt.size()>1){
       Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
-      //for(int k=0; k<v_PEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} //for plotting subsequent dist. 
+      for(int k=0; k<v_JEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} //for plotting subsequent dist. 
       std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
      }
+   std::cout<<"**************************  Event: "<<jentry<<"   ******************************" <<std::endl;
    }//loop over events
 
 TFile *outfile = new TFile("histos_QCD.root","RECREATE");
