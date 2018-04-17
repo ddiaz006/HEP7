@@ -117,7 +117,7 @@ void QCD::Loop()
    //TH1F *h_PEta  = new TH1F("PEta","PEta", 30, -3.2,3.2);
    
 
-   for (Long64_t jentry=0; jentry<1/*nentries*/;jentry++) {
+   for (Long64_t jentry=0; jentry<20/*nentries*/;jentry++) {
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   nbytes += nb;
@@ -175,6 +175,7 @@ void QCD::Loop()
       //for(int k=0; k<v_PEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} //for plotting subsequent dist. 
       std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
      }
+   std::cout<<"**************************  Event: "<<jentry<<"   ******************************" <<std::endl;
    }//loop over events
 
 TFile *outfile = new TFile("histos_QCD.root","RECREATE");

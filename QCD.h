@@ -63,7 +63,7 @@ public :
    Int_t           Particle_status[1524];   //[Event_numberP]
    Int_t           Particle_d1[1524];   //[Event_numberP]
    Int_t           Particle_d2[1524];   //[Event_numberP]
-   double R = 0.8;
+   double R = 0.4;
    double Null_d = 1234567891011;
    int    Null_i = 123456789;
 
