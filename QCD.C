@@ -149,7 +149,7 @@ void QCD::Loop()
       //dummy.SetPxPyPzE(Particle_px[z], Particle_py[z], Particle_pz[z], Particle_energy[z]);
       //P.push_back(dummy);
       //P[z].Print();
-  //    std::cout<<z<<":     Eta: "<<PEta <<" Phi: "<<PPhi<<" Px: "<<Particle_px[z]<<" Py: "<<Particle_py[z]<<" Pz: "<<Particle_pz[z]<< " E: "<<Particle_energy[z] <<" x: "<<Particle_x[z]<<" y: "<<Particle_y[z]<<" z: "<<Particle_z[z]<<" Num: "<<num<<" Denom: "<<denom<<std::endl;
+//    std::cout<<z<<":     Eta: "<<PEta <<" Phi: "<<PPhi<<" Px: "<<Particle_px[z]<<" Py: "<<Particle_py[z]<<" Pz: "<<Particle_pz[z]<< " E: "<<Particle_energy[z] <<" x: "<<Particle_x[z]<<" y: "<<Particle_y[z]<<" z: "<<Particle_z[z]<<" Num: "<<num<<" Denom: "<<denom<<std::endl;
 
       //h_PPt->Fill(PPt);
       ////h_PPhi->Fill(PPhi);
@@ -166,25 +166,15 @@ void QCD::Loop()
       }
 
     }//getting individual data
-    
-      //if(jentry==0)//std::cout<<P_listSize<<"    "<<v_PPt.size()<<"   "<<v_PPhi.size()<<std::endl;
-//      for(int k= 0; k < v_PPt.size(); k++){std::cout <<"intial("<<k<<"): "<<v_PPt[k]<<std::endl;}
-      //for(int k=0; k<v_PEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} 
-      std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
+    //for(int k = 0; k<v_PPt.size(); k++){std::cout<<k<<":     Eta: "<<v_PEta[k] <<" Phi: "<<v_PPhi[k]<<" Px: "<<v_PPx[k]<<" Py: "<<v_PPy[k]<<" Pz: "<<v_PPz[k]<< " E: "<<v_PEn[k] <<std::endl;}
+    //for(int k= 0; k < v_PPt.size(); k++){std::cout <<"intial("<<k<<"): "<<v_PPt[k]<<std::endl;}
+    //for(int k=0; k<v_PEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} //for plotting initial dist. 
+    std::cout<<"Before Clustering: NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
+    while(v_PPt.size()>1){
       Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
-      for(int k=0; k<v_PEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} 
+      //for(int k=0; k<v_PEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} //for plotting subsequent dist. 
       std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
-      Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
-      for(int k=0; k<v_PEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} 
-      std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
-      Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
-      for(int k=0; k<v_PEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} 
-      std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
-      /*Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
-      std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
-      Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
-      std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl; */
-//      for(int k= 0; k < v_PPt.size(); k++){std::cout <<"final("<<k<<"): "<<v_PPt[k]<<std::endl;}
+     }
    }//loop over events
 
 TFile *outfile = new TFile("histos_QCD.root","RECREATE");
