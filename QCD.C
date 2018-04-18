@@ -173,7 +173,7 @@ void QCD::Loop()
     std::cout<<"Before Clustering: NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
     while(v_PPt.size()>1){
       Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
-      for(int k=0; k<v_JEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} //for plotting subsequent dist. 
+      //for(int k=0; k<v_JEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} //for plotting subsequent dist. 
       std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
      }
    std::cout<<"**************************  Event: "<<jentry<<"   ******************************" <<std::endl;
