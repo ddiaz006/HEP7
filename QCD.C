@@ -116,20 +116,20 @@ void QCD::Loop()
    //TH1F *h_PPt   = new TH1F("PP_t","PP_t", 100, 0,700);
    //TH1F *h_PPhi  = new TH1F("PPhi","PPhi", 30, -1.65,1.65);
    //TH1F *h_PEta  = new TH1F("PEta","PEta", 30, -3.2,3.2);
-   
-
-   for (Long64_t jentry=0; jentry<20/*nentries*/;jentry++) {
-      Long64_t ientry = LoadTree(jentry);
-      if (ientry < 0) break;
-      nb = fChain->GetEntry(jentry);   nbytes += nb;
-    
-    //make arrays to store individ. values for later
-    std::vector<double> v_PPhi; std::vector<double> v_JPhi;
-    std::vector<double> v_PEta; std::vector<double> v_JEta;
-    std::vector<double> v_PPt;  std::vector<double> v_JPt;
-    std::vector<double> v_PPx;  std::vector<double> v_JPx;
-    std::vector<double> v_PPy;  std::vector<double> v_JPy;
-    std::vector<double> v_PPz;  std::vector<double> v_JPz;
+   TH1F *h_JPt = new TH1F("JPt","JPt",100,0,700);
+   TH1F *h_NJets =new TH1F("NJets","NJets",100,0,100);
+     for (Long64_t jentry=0; jentry<20/*nentries*/;jentry++) {
+       Long64_t ientry = LoadTree(jentry);
+       if (ientry < 0) break;
+       nb = fChain->GetEntry(jentry);   nbytes += nb;
+       
+       //make arrays to store individ. values for later
+       std::vector<double> v_PPhi; std::vector<double> v_JPhi;
+       std::vector<double> v_PEta; std::vector<double> v_JEta;
+       std::vector<double> v_PPt;  std::vector<double> v_JPt;
+       std::vector<double> v_PPx;  std::vector<double> v_JPx;
+       std::vector<double> v_PPy;  std::vector<double> v_JPy;
+       std::vector<double> v_PPz;  std::vector<double> v_JPz;
     std::vector<double> v_PEn;  std::vector<double> v_JEn;
     std::vector<int>   P_list;  int P_listSize = 0; 
     std::vector<int>   J_list;
@@ -146,6 +146,7 @@ void QCD::Loop()
       double denom = (Particle_energy[z]*1.00000001) - Particle_pz[z];
       double num  = Particle_energy[z] + Particle_pz[z];
       double PEta = 0.5*log( fabs(num/denom) );
+      // double JPt=v_JPt[z]
       //TLorentzVector dummy;
       //dummy.SetPxPyPzE(Particle_px[z], Particle_py[z], Particle_pz[z], Particle_energy[z]);
       //P.push_back(dummy);
@@ -173,16 +174,22 @@ void QCD::Loop()
     std::cout<<"Before Clustering: NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
     while(v_PPt.size()>1){
       Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
-      for(int k=0; k<v_JEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} //for plotting subsequent dist. 
-      std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
+      //for(int k=0; k<v_JEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} //for plotting subsequent dist. 
+       std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
      }
+    for (int jt=0;jt<v_JPt.size();jt++)
+      {
+	h_JPt->Fill(v_JPt[jt]);
+	  h_NJets->Fill(v_JPt.size());
+      }
+
    std::cout<<"**************************  Event: "<<jentry<<"   ******************************" <<std::endl;
    }//loop over events
 
 TFile *outfile = new TFile("histos_QCD.root","RECREATE");
 outfile->cd();
-//h_PPt->Write();
-//h_PPhi->Write();
+h_JPt->Write();
+h_NJets->Write();
 //h_PEta->Write();
 outfile->Close();
 }//end Loop()
