@@ -44,7 +44,7 @@ void QCD::Clustering( int &dP_listSize, std::vector<int> &dJ_list, std::vector<i
    dcounter = 0;
    double dimin = 999999;
    //find di_min
-   for(int ii=0; ii<dP_listSize-1; ii++){if ((1.0/(dv_PPt[ii]*dv_PPt[ii])) <dimin  ) dimin = 1.0/(dv_PPt[ii]*dv_PPt[ii]);}
+   for(int ii=0; ii<dP_listSize; ii++){if ((1.0/(dv_PPt[ii]*dv_PPt[ii])) <dimin  ) dimin = 1.0/(dv_PPt[ii]*dv_PPt[ii]);}
    for(int i = 0; i<dP_listSize-1; i++)
    {  
       d_ij.clear();
@@ -58,17 +58,16 @@ void QCD::Clustering( int &dP_listSize, std::vector<int> &dJ_list, std::vector<i
          //min inverse pt-squared
          if( PtInv2_i< PtInv2_j ) PtInv2_min = PtInv2_i;
          else PtInv2_min = PtInv2_j;
-         //std::cout <<"DeltaR_"<<i<<","<<j<<": "<<delta_R( (v_PEta[i]-v_PEta[j]) , (v_PPhi[i]-v_PPhi[j]) )<<" PEtai: "<<v_PEta[i]<<" PEtaj: "<<v_PEta[j]<<std::endl;
          d_ij.push_back( PtInv2_min*delta_R( (dv_PEta[i]-dv_PEta[j]) , (dv_PPhi[i]-dv_PPhi[j]) )*delta_R( (dv_PEta[i]-dv_PEta[j]) , (dv_PPhi[i]-dv_PPhi[j]) )*(1.0/(R*R)));  
       }
+      
       for(int j = i+1; j<dP_listSize; j++)
-      {  //std::cout <<"****j=:"<<j<<"*** d_ij[j]: "<<d_ij[j]<<std::endl;
+      {  
          if (d_ij[j] < dmin){ dmin = d_ij[j]; id = j;}
       }
-      //std::cout << i<<":   dmin: "<<dmin<<"   dimin: "<<dimin<<std::endl;
-      //plan to add stuff not marked for removal to dummy vecotrs then at end delete old std::vectors and save dummy std::vectors in new ones 
-      if(dmin > dimin) {
+      if(dmin > dimin && dv_PPt[i]>1000.0 && fabs(dv_PEta[i])<1.0) {
          dJ_list.push_back(i);
+         //std::cout<<"JetEta:  "<<dv_PEta [i]<<std::endl;
          //put jet into jet std::vectors
          dv_JPhi.push_back(dv_PPhi[i]); dv_PPhi[i] = Null_d;
          dv_JEta.push_back(dv_PEta[i]); dv_PEta[i] = Null_d;
@@ -80,56 +79,75 @@ void QCD::Clustering( int &dP_listSize, std::vector<int> &dJ_list, std::vector<i
          Erase(dv_PPt, dv_PEta, dv_PPhi, dv_PPx, dv_PPy, dv_PPz, dv_PEn);
          dP_listSize = dv_PPt.size();
       }    
-      //if(dmin < dimin /*&& dP_listSize>1*/) 
          else {
+         if(i<dP_listSize-1){
          dR_list.push_back(i); dR_list.push_back(id);
          //so add as new entries the merged objects, set the old quantites to a value marked for erasure.
          dv_PPt .push_back(dv_PPt [i]  + dv_PPt [id]); dv_PPt [i] = Null_d; dv_PPt [id] = Null_d;
-         dv_PEta.push_back(dv_PEta[i]  + dv_PEta[id]); dv_PEta[i] = Null_d; dv_PEta[id] = Null_d;
-         dv_PPhi.push_back(dv_PPhi[i]  + dv_PPhi[id]); dv_PPhi[i] = Null_d; dv_PPhi[id] = Null_d;  
+      //   dv_PPhi.push_back(dv_PPhi[i]  + dv_PPhi[id]); dv_PPhi[i] = Null_d; dv_PPhi[id] = Null_d;  
          dv_PPx .push_back(dv_PPx [i]  + dv_PPx [id]); dv_PPx [i] = Null_d; dv_PPx [id] = Null_d;
          dv_PPy .push_back(dv_PPy [i]  + dv_PPy [id]); dv_PPy [i] = Null_d; dv_PPy [id] = Null_d;
          dv_PPz .push_back(dv_PPz [i]  + dv_PPz [id]); dv_PPz [i] = Null_d; dv_PPz [id] = Null_d;
          dv_PEn .push_back(dv_PEn [i]  + dv_PEn [id]); dv_PEn [i] = Null_d; dv_PEn [id] = Null_d;
+      //   dv_PEta.push_back(dv_PEta[i]  + dv_PEta[id]); dv_PEta[i] = Null_d; dv_PEta[id] = Null_d;
+         double ddenom = (dv_PEn[dv_PEn.size() -1]*1.00000001) - dv_PPz[dv_PEn.size() -1];
+         double dnum  = dv_PEn[dv_PEn.size()-1] + dv_PPz[dv_PEn.size()-1];
+         double dPEta = 0.5*log( fabs(dnum/ddenom) );
+         double dPPhi = atan2(dv_PPx[dv_PEn.size()-1],dv_PPy[dv_PEn.size()-1]);
+         dv_PPhi.push_back(dPPhi); dv_PPhi[i] = Null_d; dv_PPhi[id] = Null_d;  
+         dv_PEta.push_back(dPEta); dv_PEta[i] = Null_d; dv_PEta[id] = Null_d;
          dcounter= dcounter + 1;
          Erase(dv_PPt, dv_PEta, dv_PPhi, dv_PPx, dv_PPy, dv_PPz, dv_PEn);
          dP_listSize = dv_PPt.size();
+         }
+         else{
+         //so add as new entries the merged objects, set the old quantites to a value marked for erasure.
+         dv_PPt [i] = Null_d;
+      //   dv_PPhi[i] = Null_d;  
+         dv_PPx [i] = Null_d;
+         dv_PPy [i] = Null_d;
+         dv_PPz [i] = Null_d;
+         dv_PEn [i] = Null_d;
+         //dv_PEta[i] = Null_d;
+         double ddenom = (dv_PEn[dv_PEn.size() -1]*1.00000001) - dv_PPz[dv_PEn.size() -1];
+         double dnum  = dv_PEn[dv_PEn.size()-1] + dv_PPz[dv_PEn.size()-1];
+         double dPEta = 0.5*log( fabs(dnum/ddenom) );
+         double dPPhi = atan2(dv_PPx[dv_PEn.size()-1],dv_PPy[dv_PEn.size()-1]);
+         dv_PPhi.push_back(dPPhi); dv_PPhi[i] = Null_d; dv_PPhi[id] = Null_d;  
+         dv_PEta.push_back(dPEta); dv_PEta[i] = Null_d; dv_PEta[id] = Null_d;
+         Erase(dv_PPt, dv_PEta, dv_PPhi, dv_PPx, dv_PPy, dv_PPz, dv_PEn);
+         dP_listSize = dv_PPt.size();
+         }
       }
    }
-//      for(int zz = 0; zz <dcounter; zz++){dP_list.pop_back();} 
-//      for(int k= 0; k < dv_PPt.size(); k++){std::cout <<"before erase("<<k<<"): "<<dv_PPt[k]<<std::endl;}
-      //Erase(dv_PPt, dv_PEta, dv_PPhi, dv_PPx, dv_PPy, dv_PPz, dv_PEn);
-      //dP_listSize = dv_PPt.size();
 }
 
 void QCD::Loop()
 {
-//      root> .L QCD.C
-//      root> QCD t
-//      root> t.Loop();       // Loop on all entries
-   if (fChain == 0) return;
-   Long64_t nentries = fChain->GetEntriesFast();
+    if (fChain == 0) return;
+    Long64_t nentries = fChain->GetEntriesFast();
    
-   Long64_t nbytes = 0, nb = 0;
+    Long64_t nbytes = 0, nb = 0;
 
-   //Defining histograms to save
-   //TH1F *h_PPt   = new TH1F("PP_t","PP_t", 100, 0,700);
-   //TH1F *h_PPhi  = new TH1F("PPhi","PPhi", 30, -1.65,1.65);
-   //TH1F *h_PEta  = new TH1F("PEta","PEta", 30, -3.2,3.2);
-   TH1F *h_JPt = new TH1F("JPt","JPt",100,0,700);
-   TH1F *h_NJets =new TH1F("NJets","NJets",100,0,100);
-     for (Long64_t jentry=0; jentry<20/*nentries*/;jentry++) {
-       Long64_t ientry = LoadTree(jentry);
-       if (ientry < 0) break;
-       nb = fChain->GetEntry(jentry);   nbytes += nb;
+    //Defining histograms to save
+    TH1F *h_PPt   = new TH1F("PP_t","PP_t", 100, 0,700);
+    TH1F *h_PPhi  = new TH1F("PPhi","PPhi", 30, -1.65,1.65);
+    TH1F *h_PEta  = new TH1F("PEta","PEta", 30, -3.2,3.2);
+    TH1F *h_JPt = new TH1F("JPt","JPt",100,0,700);
+    TH1F *h_NJets =new TH1F("NJets","NJets",100,0,100);
+   
+    for (Long64_t jentry=0; jentry<nentries/*nentries*/;jentry++) {
+      Long64_t ientry = LoadTree(jentry);
+      if (ientry < 0) break;
+      nb = fChain->GetEntry(jentry);   nbytes += nb;
        
-       //make arrays to store individ. values for later
-       std::vector<double> v_PPhi; std::vector<double> v_JPhi;
-       std::vector<double> v_PEta; std::vector<double> v_JEta;
-       std::vector<double> v_PPt;  std::vector<double> v_JPt;
-       std::vector<double> v_PPx;  std::vector<double> v_JPx;
-       std::vector<double> v_PPy;  std::vector<double> v_JPy;
-       std::vector<double> v_PPz;  std::vector<double> v_JPz;
+     //make arrays to store individ. values for later
+    std::vector<double> v_PPhi; std::vector<double> v_JPhi;
+    std::vector<double> v_PEta; std::vector<double> v_JEta;
+    std::vector<double> v_PPt;  std::vector<double> v_JPt;
+    std::vector<double> v_PPx;  std::vector<double> v_JPx;
+    std::vector<double> v_PPy;  std::vector<double> v_JPy;
+    std::vector<double> v_PPz;  std::vector<double> v_JPz;
     std::vector<double> v_PEn;  std::vector<double> v_JEn;
     std::vector<int>   P_list;  int P_listSize = 0; 
     std::vector<int>   J_list;
@@ -138,7 +156,7 @@ void QCD::Loop()
     //std::vector<TLorentzVector> P;
     int counter;
     
-    for (int z = 0; z</*517*/Event_numberP; z++){
+    for (int z = 0; z<Event_numberP; z++){
       //Particle Pt,phi
       double PPt = sqrt(Particle_px[z]*Particle_px[z] + Particle_py[z]*Particle_py[z]);
       double PPhi = atan2(Particle_px[z],Particle_py[z]);
@@ -153,43 +171,45 @@ void QCD::Loop()
       //P[z].Print();
 //    std::cout<<z<<":     Eta: "<<PEta <<" Phi: "<<PPhi<<" Px: "<<Particle_px[z]<<" Py: "<<Particle_py[z]<<" Pz: "<<Particle_pz[z]<< " E: "<<Particle_energy[z] <<" x: "<<Particle_x[z]<<" y: "<<Particle_y[z]<<" z: "<<Particle_z[z]<<" Num: "<<num<<" Denom: "<<denom<<std::endl;
 
-      //h_PPt->Fill(PPt);
-      ////h_PPhi->Fill(PPhi);
-      ///h_PEta->Fill(PEta);
-     //std::cout<<"Eta: "<< fabs(PEta)  <<"       d1: "<<Particle_d1[z]<<std::endl;
       //fill particle histograms and arrays
       if(fabs(PEta) <5 && Particle_d1[z] <0){
-        /*h_PPt->Fill(PPt);*/   v_PPt.push_back(PPt);
-        /*h_PPhi->Fill(PPhi);*/ v_PPhi.push_back(PPhi);
-        /*h_PEta->Fill(PEta);*/ v_PEta.push_back(PEta);
+        h_PPt->Fill(PPt);   v_PPt.push_back(PPt);
+        h_PPhi->Fill(PPhi); v_PPhi.push_back(PPhi);
+        h_PEta->Fill(PEta); v_PEta.push_back(PEta);
         v_PPx.push_back(Particle_px[z]); v_PPy.push_back(Particle_py[z]); v_PPz.push_back(Particle_pz[z]); v_PEn.push_back(Particle_energy[z]); 
         //make list of particles
         P_list.push_back(z); P_listSize= P_listSize + 1; 
       }
 
     }//getting individual data
-    //for(int k = 0; k<v_PPt.size(); k++){std::cout<<k<<":     Eta: "<<v_PEta[k] <<" Phi: "<<v_PPhi[k]<<" Px: "<<v_PPx[k]<<" Py: "<<v_PPy[k]<<" Pz: "<<v_PPz[k]<< " E: "<<v_PEn[k] <<std::endl;}
-    //for(int k= 0; k < v_PPt.size(); k++){std::cout <<"intial("<<k<<"): "<<v_PPt[k]<<std::endl;}
-    //for(int k=0; k<v_PEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} //for plotting initial dist. 
+ //trying a dummy particle to avoid missing one in clustering algortithm
+ v_PPx.push_back(0.0); v_PPy.push_back(0.0); v_PPz.push_back(0.0); v_PEn.push_back(0.0); 
+ v_PPt.push_back(0.0); v_PEta.push_back(0.0); v_PPhi.push_back(0.0);
+ 
+//    for(int k=0; k<v_PEta.size(); k++){std::cout<<v_PEta[k]<<"   "<<v_PPhi[k]<<"   "<<v_PPt[k]<<std::endl;} //for initial particle dist. 
     std::cout<<"Before Clustering: NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
     while(v_PPt.size()>1){
       Clustering( P_listSize, J_list, R_list, v_PPt, v_PEta, v_PPhi, v_PPx, v_PPy, v_PPz, v_PEn, v_JPt, v_JEta, v_JPhi, v_JPx, v_JPy, v_JPz, v_JEn, counter);
       //for(int k=0; k<v_JEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<std::endl;} //for plotting subsequent dist. 
-      std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
+      //std::cout<<"NParticles: "<<v_PPt.size()<<"        NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
      }
+    std::cout<<"NParticles: "<<v_PPt.size()<<"       -NJets: "<<v_JPt.size()<<"       PList size:   "<<P_listSize<<std::endl;
+//    for(int k=0; k<v_JEta.size(); k++){std::cout<<v_JEta[k]<<"   "<<v_JPhi[k]<<"   "<<v_JPt[k]<<std::endl;} //for plotting final Jet dist. 
+ 
     for (int jt=0;jt<v_JPt.size();jt++)
       {
 	h_JPt->Fill(v_JPt[jt]);
-	  h_NJets->Fill(v_JPt.size());
+	h_NJets->Fill(v_JPt.size());
       }
 
    std::cout<<"**************************  Event: "<<jentry<<"   ******************************" <<std::endl;
    }//loop over events
-
 TFile *outfile = new TFile("histos_QCD.root","RECREATE");
 outfile->cd();
 h_JPt->Write();
 h_NJets->Write();
-//h_PEta->Write();
+h_PEta->Write();
+h_PPhi->Write();
+h_PPt->Write();
 outfile->Close();
 }//end Loop()
