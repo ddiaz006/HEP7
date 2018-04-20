@@ -8,6 +8,10 @@
 #include <vector>
 #include <cmath>
 #include "TGraph.h"
+#include "TStyle.h"
+#include "TColor.h"
+#include "TF2.h"
+#include "TExec.h"
 
 double QCD::delta_R(double dEta, double dPhi)
 {
@@ -133,8 +137,8 @@ void QCD::Loop()
     TH1F *h_PPt   = new TH1F("PP_t","PP_t", 100, 0,700);
     TH1F *h_PPhi  = new TH1F("PPhi","PPhi", 30, -1.65,1.65);
     TH1F *h_PEta  = new TH1F("PEta","PEta", 30, -3.2,3.2);
-    TH1F *h_JPt = new TH1F("JPt","JPt",100,0,700);
-    TH1F *h_NJets =new TH1F("NJets","NJets",100,0,100);
+    TH1F *h_JPt = new TH1F("JPt","JPt",30,999.5,2999.5);
+    TH1F *h_NJets =new TH1F("NJets","NJets",4,0.5,3.5);
    
     for (Long64_t jentry=0; jentry<nentries/*nentries*/;jentry++) {
       Long64_t ientry = LoadTree(jentry);
@@ -201,15 +205,23 @@ void QCD::Loop()
 	h_JPt->Fill(v_JPt[jt]);
 	h_NJets->Fill(v_JPt.size());
       }
-
-   std::cout<<"**************************  Event: "<<jentry<<"   ******************************" <<std::endl;
-   }//loop over events
-TFile *outfile = new TFile("histos_QCD.root","RECREATE");
-outfile->cd();
-h_JPt->Write();
-h_NJets->Write();
-h_PEta->Write();
-h_PPhi->Write();
-h_PPt->Write();
-outfile->Close();
+    
+    std::cout<<"**************************  Event: "<<jentry<<"   ******************************" <<std::endl;
+    }//loop over events
+    TFile *outfile = new TFile("histos_QCD.root","RECREATE");
+    outfile->cd();
+    h_JPt->SetFillColor(40);
+    h_JPt->SetLineColor(35);
+    h_JPt->GetXaxis()->SetTitle("Events");
+    h_JPt->GetYaxis()->SetTitle("Jet Transverse Momentum(GeV)");
+    h_JPt->Write();
+    h_NJets->SetFillColor(45);
+    h_NJets->GetXaxis()->SetTitle("Events");
+    h_NJets->GetYaxis()->SetTitle("Number of Jets");
+    h_NJets->SetLineColor(36);
+    h_NJets->Write();
+    h_PEta->Write();
+    h_PPhi->Write();
+    h_PPt->Write();
+    outfile->Close();
 }//end Loop()
